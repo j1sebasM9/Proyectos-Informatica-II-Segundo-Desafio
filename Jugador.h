@@ -30,9 +30,6 @@ public:
     EstadisticasJugador& getEstadisticas() { return estadisticas; }
 
 
-    void setNumeroCamiseta(int num)   { numeroCamiseta = num; }
-    void setNombre(const char* n);
-    void setApellido(const char* a);
 
     //  Medición de memoria
     int getMemoriaBytes() const;

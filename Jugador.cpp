@@ -64,17 +64,7 @@ Jugador::~Jugador() {
     delete[] apellido;
 }
 
-//Setters
 
-void Jugador::setNombre(const char* n) {
-    delete[] nombre;
-    nombre = copiarCadena(n);
-}
-
-void Jugador::setApellido(const char* a) {
-    delete[] apellido;
-    apellido = copiarCadena(a);
-}
 
 //consumo de memoria
 
