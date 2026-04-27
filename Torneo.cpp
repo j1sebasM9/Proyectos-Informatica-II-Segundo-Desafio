@@ -3,8 +3,13 @@
 #include <cstdio>
 #include <cstdlib>
 
+
+
+
 Torneo::Torneo() {
+    totalIteraciones = 0;
     for (int i = 0; i < 32; i++) {
+        totalIteraciones++;
         clasificados[i] = nullptr;
     }
 }
@@ -16,6 +21,7 @@ void Torneo::cargarDatos(const char* rutaEquipos, const char* rutaJugadores) {
     gestor.extraerEquipos(rutaEquipos, equipos);
 
     for (int i = 0; i < equipos.getCantidad(); i++) {
+        totalIteraciones++;
         equipos.obtener(i)->repartirGolesHistoricos();
     }
     std::cout << "-> " << equipos.getCantidad() << " equipos listos para el mundial." << std::endl;
@@ -24,7 +30,9 @@ void Torneo::cargarDatos(const char* rutaEquipos, const char* rutaJugadores) {
 void Torneo::ordenarEquiposPorRanking() {
     int n = equipos.getCantidad();
     for (int i = 0; i < n - 1; i++) {
+        totalIteraciones++;
         for (int j = 0; j < n - i - 1; j++) {
+            totalIteraciones++;
             if (equipos.obtener(j)->getRankingFIFA() > equipos.obtener(j + 1)->getRankingFIFA()) {
                 Equipo* temp = equipos.obtener(j);
                 equipos.modificar(j, equipos.obtener(j + 1));
@@ -39,6 +47,7 @@ bool Torneo::sePuedeAgregarAlGrupo(Grupo& grupo, Equipo* equipoNuevo) {
     const char* confedNueva = equipoNuevo->getConfederacion();
 
     for (int i = 0; i < 4; i++) {
+        totalIteraciones++;
         Equipo* eqExistente = grupo.getEquipoRegistrado(i);
         if (eqExistente != nullptr) {
             const char* confedExistente = eqExistente->getConfederacion();
@@ -63,14 +72,18 @@ void Torneo::conformarGrupos() {
     bool exito = false;
 
     while (!exito) {
+        totalIteraciones++;
+
         // Limpiar grupos
         for (int i = 0; i < 12; i++) {
+            totalIteraciones++;
             grupos[i].vaciar();
             grupos[i].setNombre('A' + i);
         }
 
         // Limpiar bombos
         for (int b = 0; b < 4; b++) {
+            totalIteraciones++;
             bombos[b].vaciar();
         }
 
@@ -80,6 +93,7 @@ void Torneo::conformarGrupos() {
         int bActual = 0;
 
         for (int i = 0; i < 48; i++) {
+            totalIteraciones++;
             Equipo* eq = equipos.obtener(i);
 
             if (eq->coincidePais("EE. UU.")) {
@@ -98,11 +112,14 @@ void Torneo::conformarGrupos() {
 
         // Asignar equipos a grupos
         for (int b = 0; b < 4 && exito; b++) {
+            totalIteraciones++;
             for (int g = 0; g < 12 && exito; g++) {
+                totalIteraciones++;
                 bool asignado = false;
                 int intentos = 0;
 
                 while (!asignado && bombos[b].getCantidad() > 0 && intentos < 500) {
+                    totalIteraciones++;
                     int rnd = std::rand() % bombos[b].getCantidad();
                     Equipo* candidato = bombos[b].obtener(rnd);
 
@@ -132,10 +149,13 @@ void Torneo::generarCalendarioFaseGrupos() {
     int partidosHoy = 0;
 
     for (int jornada = 0; jornada < 3; jornada++) {
+        totalIteraciones++;
         for (int g = 0; g < 12; g++) {
+            totalIteraciones++;
             grupos[g].configurarEmparejamientos();
 
             for (int p = 0; p < 2; p++) {
+                totalIteraciones++;
                 int idPartido = (jornada * 2) + p;
                 Partido& part = grupos[g].getPartidoFaseGrupos(idPartido);
 
@@ -143,6 +163,7 @@ void Torneo::generarCalendarioFaseGrupos() {
                 int mes = 6;
 
                 while (dia > 30) {
+                    totalIteraciones++;
                     dia -= 30;
                     mes++;
                 }
@@ -167,6 +188,7 @@ void Torneo::generarCalendarioFaseGrupos() {
 void Torneo::simularFaseGrupos() {
     std::cout << "[4/6] Simulando 72 encuentros de fase de grupos..." << std::endl;
     for (int i = 0; i < 12; i++) {
+        totalIteraciones++;
         grupos[i].simularFaseGrupos();
     }
 }
@@ -178,6 +200,7 @@ void Torneo::transicionR16() {
 
     // 1. Guardar los primeros y segundos de cada grupo
     for (int g = 0; g < 12; g++) {
+        totalIteraciones++;
         clasificados[totalClasificados++] = grupos[g].getPrimerLugar();
         clasificados[totalClasificados++] = grupos[g].getSegundoLugar();
     }
@@ -189,6 +212,7 @@ void Torneo::transicionR16() {
     int tercerosGf[12];
 
     for (int g = 0; g < 12; g++) {
+        totalIteraciones++;
         tercerosE[g]   = grupos[g].getTercerLugar();
         tercerosPts[g] = grupos[g].getPuntosTercerLugar();
         tercerosDg[g]  = grupos[g].getDiferenciaGolesTercerLugar();
@@ -197,7 +221,9 @@ void Torneo::transicionR16() {
 
     // 2. Ordenar a los mejores terceros (Método Burbuja)
     for (int i = 0; i < 11; i++) {
+        totalIteraciones++;
         for (int j = 0; j < 11 - i; j++) {
+            totalIteraciones++;
             bool swap = false;
 
             // Criterios de desempate
@@ -234,6 +260,7 @@ void Torneo::transicionR16() {
 
     // 3. Agregar a los 8 mejores terceros al arreglo final
     for (int i = 0; i < 8; i++) {
+        totalIteraciones++;
         clasificados[totalClasificados++] = tercerosE[i];
     }
 
@@ -253,4 +280,28 @@ void Torneo::guardarResultados() {
     std::cout << "\n[GUARDANDO] Exportando estadisticas de jugadores por equipo...\n";
     gestor.guardarJugadores(equipos);
     std::cout << "-> Archivos de jugadores guardados exitosamente.\n";
+}
+
+// Medición de memoria
+int Torneo::getMemoriaBytes() {
+    int mem = sizeof(*this);
+
+    // Sumamos la memoria interna generada por los 12 grupos
+    for (int i = 0; i < 12; i++) {
+        totalIteraciones++;
+        mem += (grupos[i].getMemoriaBytes() - sizeof(Grupo));
+    }
+
+    // Sumamos la memoria interna generada por la etapa eliminatoria
+    mem += (eliminatoria.getMemoriaBytes() - sizeof(EtapaEliminatoria));
+
+
+    for (int i = 0; i < equipos.getCantidad(); i++) {
+        totalIteraciones++;
+        if (equipos.obtener(i)) {
+            mem += equipos.obtener(i)->getMemoriaBytes();
+        }
+    }
+
+    return mem;
 }

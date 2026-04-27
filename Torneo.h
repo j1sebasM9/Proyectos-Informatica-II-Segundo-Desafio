@@ -25,6 +25,9 @@ private:
     void ordenarEquiposPorRanking();
     bool sePuedeAgregarAlGrupo(Grupo& grupo, Equipo* equipoNuevo);
 
+    // Medición de iteraciones
+    int totalIteraciones;
+
 public:
     Torneo();
     virtual ~Torneo();
@@ -46,6 +49,14 @@ public:
     Partido* getPartidosR16() {
         return eliminatoria.getPartidosR16();
     }
+
+
+
+    int getIteraciones() { return totalIteraciones; }
+    void reiniciarIteraciones() { totalIteraciones = 0; }
+
+    // Medición de memoria
+    int getMemoriaBytes() ;
 };
 
 #endif
